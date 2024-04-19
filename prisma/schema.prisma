@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model University {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(100) @unique
+  status    Status    @default(ENABLE)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  students  Education[]
+}
+
+model Student {
+  id            Int       @id @default(autoincrement())
+  firstName     String    @db.VarChar(50)
+  lastName      String    @db.VarChar(50)
+  status        Status    @default(ENABLE)
+  createdAt     DateTime? @default(now())
+  updatedAt     DateTime? @updatedAt
+  universities  Education[]
+}
+
+model Education {
+  id            Int               @id @default(autoincrement())
+  university    University        @relation(fields: [universityId], references: [id])
+  universityId  Int
+  student       Student           @relation(fields: [studentId], references: [id])
+  studentId     Int
+  degree        Degree
+  status        EducationalStatus @default(STUDY)
+  createdAt     DateTime?         @default(now())
+  updatedAt     DateTime?         @updatedAt
+}
+
+enum Status {
+  ENABLE
+  DISABLE
+}
+
+enum Degree {
+  BACHELOR
+  MASTER
+  DOCTORAL
+}
+
+enum EducationalStatus {
+  STUDY
+  GRADUATE
+  TERMINATE
+}
